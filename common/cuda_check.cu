@@ -2,11 +2,9 @@
 #include <stdio.h>
 #include <assert.h>
 
-inline cuda_check_t(cudaError_t call) {
-    do {
-        if(call != cudaSuccess) {
-            fprintf(stderr, "cuda Runtime error %s\n", cudaGetErrorString(call));
-            assert(call == cudaSuccess);
-        }
-    } while(0)
+inline void CUDA_CHECK(cudaError_t call) {
+    if(call != cudaSuccess) {
+        fprintf(stderr, "cuda Runtime error %s: %s\n", cudaGetErrorString(call), cudaGetErrorName(call));
+        abort();
+    }
 }
