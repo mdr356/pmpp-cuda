@@ -122,3 +122,41 @@ int main() {
     if (!ok) { fprintf(stderr, "write failed\n"); return 1; }
     return 0;
 }
+
+// Questions to answer in a comment at the bottom of this file once it works:
+//   Q1. For a 3x3 window, how many global-memory LOADS does each thread do?
+//       How many STOREs? What is the ratio of loads to stores, and why does
+//       that make this kernel memory-bound?
+
+/** 
+** Answers to the questions:
+for a 3x3 window, each thread does 9 global memory LOADS and 1 store.
+why is that?
+well thats because 3 rows and 3 collumns results in 9 distinct pixels 
+which has 9 distinct memory locations, heace each pixel needs to be read
+separately. which is what takes place inside the 2 for loops in the kernel.
+
+the 3x3 window results in 1 store, because only one value is written to the output
+which is the sum of the window.
+
+**/
+
+//   Q2. Two neighbouring threads in the same block read mostly the same
+//       pixels. Does the hardware do anything to help with that? (Hint:
+//       think about L1/L2 cache; Chapter 5 will fix this properly with
+//       shared memory.)
+/**
+ * each threads has dedicated registers which store temp values, blocks share same L1 cache memory
+ * so all threads in the same block benefit from same L1 cache memory.
+ */
+
+//   Q3. Why can't you just divide by (2*BLUR_SIZE+1)*(2*BLUR_SIZE+1)
+//       everywhere? Describe what the output would look like at the border
+//       if you did.
+
+/**
+ * 
+ */
+//   Q4. Compare grayscale and blur: in grayscale every thread was
+//       independent of its neighbours' pixels. What changed here, and why is
+//       that the first real step toward "stencil" computations?
