@@ -46,7 +46,7 @@
 #include <stdlib.h>
 #include <limits.h>
 
-#define BLUR_SIZE 1   // try 1, then 3, then 7 and compare out_blur.png
+#define BLUR_SIZE 3   // try 1, then 3, then 7 and compare out_blur.png
 
 // ---------------------------------------------------------------------------
 // YOUR PART 1: the kernel.
@@ -155,8 +155,17 @@ which is the sum of the window.
 //       if you did.
 
 /**
- * 
+ * if you just divide by (2*BLUR_SIZE+1)*(2*BLUR_SIZE+1) everywhere, 
+ * the border pixels would be averaged with non-existent pixels outside the image,
+ *  leading to incorrect darkening or artifacts at the edges.
  */
+
 //   Q4. Compare grayscale and blur: in grayscale every thread was
 //       independent of its neighbours' pixels. What changed here, and why is
 //       that the first real step toward "stencil" computations?
+
+/*
+* grayscale every thread is independedn and only reads it's own pixel
+* blue on the other hand, each thread reads multiple neighboring pixels within the blur window
+* this dependency on neighboring pixels is what makes it a stencil computation.
+*/
