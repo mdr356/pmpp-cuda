@@ -16,6 +16,7 @@ slow as it is.
 | 3 | [Grayscale](ch03_grayscale/) | 2-D grid over an image, interleaved RGB indexing | Done |
 | 3 | [Box blur](ch03_blur/) | Stencil access, edge handling, load/store ratio | Done, questions answered |
 | 3 | [Matrix multiply](ch03_matmul/) | One thread per output, compute-to-memory ratio, GFLOP/s | In progress |
+| 4 | [Warps and occupancy](ch04_warps/) | Device limits, control divergence cost, block size vs occupancy | Not started |
 
 Each directory has its own README with the problem statement, the design
 decisions, the build command, and answers to the chapter's questions.
@@ -28,6 +29,7 @@ ch02_vecadd/vecadd.cu
 ch03_grayscale/grayscale.cu
 ch03_blur/blur.cu
 ch03_matmul/matmul.cu
+ch04_warps/warps.cu
 ```
 
 ## Building
