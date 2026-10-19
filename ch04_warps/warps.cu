@@ -294,3 +294,76 @@ int main()
     free(h_in); free(h_out); free(h_ref);
     return ok ? 0 : 1;
 }
+
+
+//   Q1. From Part A: how many warps can be resident on one SM? For 256-thread
+//       blocks, how many blocks fit per SM by the thread limit? By the block
+//       limit? Which one binds on your GPU? Repeat for 64-thread blocks.
+/*
+ * Device:  Tesla T4 GPU,
+ *  Max warps per SM: 32 
+ * for a 256 thread block, with a maximum of 2048 threads per SM 
+ *    => 2048 / 256 = 8 blocks per SM
+ * Threads limits binds first.
+ * 
+ * for a 64 threads block, with a maximum of 2048 threads per SM
+ *    => 2048 / 64 = 32 blocks per SM
+ */
+
+//   Q2. Go back to ch02_vecadd (N = 1000, 256-thread blocks). How many warps
+//       are in the grid? How many of them have control divergence on the
+//       `if (i < N)` guard? What is the SIMD efficiency of that warp
+//       (active lanes / 32)? What is the SIMD efficiency of the grid overall?
+
+/*
+ * since one warp is 32 threads, and we can run 256-thread blocks, 
+ * therefore each 256-thread block contains 256/32 = 8 warps. 
+ * 
+ * with N = 1000, the grid contains 1000 / 256 = 3.90625 ~ 4 blocks.
+ * each block has 8 warps, so the total number of warps in the grid is 4 * 8 = 32 warps.
+ * 
+ * SIMD efficiency is (active lanes / 32). 
+ * 256+256+256+232 = 1000 active threads
+ * the last thread is 232 so we have wastefull thread in the last thread
+ * therefore the SIMD efficiency of the last warp is 232 / 256 = 0.90625
+ * the overall SIMD efficiency of the grid is 1000 / (4 * 256) = 1000 / 1024 = 0.9765625
+ */
+//   Q3. From Part B: how much slower was divergentKernel than uniformKernel?
+//       Explain what the hardware does at the branch in each case. Why is the
+//       slowdown not exactly 2x?
+
+/*
+ * divergentKernel was slower than uniformKernel because of branch divergence.
+ * When threads within a warp take different execution paths, the hardware serializes
+ * the execution of each path, effectively reducing parallelism. The slowdown is not
+ * exactly 2x because not all warps experience full divergence and some instructions
+ * can still be executed in parallel.
+*/
+
+//   Q4. From Part C: which block size was fastest, and by how much? Did the
+//       theoretical occupancy predict the ordering? At what point did adding
+//       occupancy stop helping, and why does a memory-bound kernel not need
+//       100% occupancy to reach full throughput?
+
+/*
+ * The fastest block size and its performance relative to others would be determined
+ * by the balance between occupancy and memory throughput. The theoretical occupancy
+ * might predict the ordering to some extent, but for memory-bound kernels, achieving
+ * 100% occupancy is not necessary to reach full throughput because memory latency
+ * can be hidden with fewer active warps.
+ */
+
+//   Q5. (Book-style) A kernel uses 48 registers per thread and no shared
+//       memory, launched with 512-thread blocks. Using YOUR Part A numbers,
+//       which resource limits the number of resident blocks per SM, how many
+//       blocks is that, and what occupancy does it give?
+
+/*
+ * To determine which resource limits the number of resident blocks per SM, we need to
+ * consider the number of registers per thread and the block size. Each block has 512
+ * threads, and each thread uses 48 registers. The total number of registers per block
+ * is 512 * 48 = 24576 registers. If the SM has a limited number of registers (e.g., 65536),
+ * the number of resident blocks per SM is limited by the register file. In this case,
+ * 65536 / 24576 ≈ 2 blocks per SM. The occupancy is then (2 blocks * 512 threads) / (max
+ * threads per SM), which depends on the specific GPU architecture.
+ */
